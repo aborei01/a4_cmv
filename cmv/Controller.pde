@@ -11,11 +11,8 @@ class Controller {
     void hover() {
         for (PortView v: views) {
             if (v.isOnMe()) {
-                Datum m = v.hover();
-                for (PortView view : views) {
-                  view.setMark(m);
-                }
-                break;
+                Datum mark = v.hover();
+                setMarksOfViews(mark);
             }
         }
     }
@@ -27,20 +24,20 @@ class Controller {
     }
 
 
-    public void resetMark() {
-        // marks are global
-        mark = new Datum();
-    }
-
-    //public void setMarksOfViews(){
-    //    for (PortView v: views) {
-    //        v.setMarks(marks);
-    //    }
+    //public void resetMark() {
+    //    // marks are global
+    //    mark = new Datum();
     //}
+
+    public void setMarksOfViews(Datum mark){
+       for (PortView v: views) {
+           v.setMark(mark);
+       }
+    }
     
     
     
-    void initViews(ArrayList<Datum> d) {
+    void initViews(ArrayList<Datum> d, Datum mark) {
         PieView pv = new PieView();
         pv
             .setController(this)
@@ -51,8 +48,7 @@ class Controller {
             .setMark(mark)
             .setData(d)
             ;
-        pv.init();
-            
+        pv.init();     
         
         LineView lv = new LineView();
         lv
@@ -65,9 +61,6 @@ class Controller {
             .setData(d)
             ;
         lv.init();
-        //println("leftX = "+lv.leftX+" leftY = "+lv.leftY);
-        //println("width = "+lv.w+" height = "+lv.h);
-        //lv.setXYIndices();
             
         FlowView fv = new FlowView();
         fv

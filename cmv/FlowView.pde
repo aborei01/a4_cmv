@@ -6,7 +6,8 @@ class FlowView extends PortView {
   ArrayList<Datum> bySponsorAndDept = null;
   ArrayList<Datum> bySponsor = null;
   ArrayList<Datum> byDept    = null;
-  IntList colors = null;
+  color[] sponsColors    = null;
+  color[] deptColors     = null;
   
   ArrayList<Tuple> sponsTuples = null;
   ArrayList<Tuple> deptTuples  = null;
@@ -20,6 +21,42 @@ class FlowView extends PortView {
     byDept = sortByDepartment();
     squaresWidth = w - BORDER;
     setCoordinates();
+    setColors();
+  }
+  
+  void setColors() {
+    
+     sponsColors = new color[bySponsor.size()];
+     deptColors  = new color[bySponsor.size()];
+     int fill = 0;
+     color c = color(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
+     String lastSponsor = bySponsor.get(0).sponsor;
+     String lastDept = byDept.get(0).department;
+
+     for(int i = 0; i < bySponsor.size(); i++) {
+          Datum d = bySponsor.get(i);
+          if (! d.sponsor.equals(lastSponsor)) {
+              fill++;
+              c = color(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
+              sponsColors[i] = c;
+              lastSponsor = d.sponsor; 
+          } else sponsColors[i] = c;
+      } fill++;
+      
+      for(int i = 0; i < byDept.size(); i++) {
+        
+          Datum d = byDept.get(i);
+          
+          println(d.department + " size is " + byDept.size());
+          
+          if (! d.department.equals(lastDept)) {
+              fill++;
+              c = color(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
+              deptColors[i] = c;
+              lastDept = d.department; 
+          } else deptColors[i] = c;
+          
+      }
   }
   
   void setCoordinates() {
@@ -41,7 +78,6 @@ class FlowView extends PortView {
            deptCornerX += rWidth;
            deptTuples.get(i).setB(deptCornerX);
   
-           
            Tuple st = new Tuple();      
            sponsTuples.add(st);
            sponsTuples.get(i).setA(sponsCornerX);
@@ -55,69 +91,37 @@ class FlowView extends PortView {
   
   void display() {
      float rWidth = 0;
-     float cornerX = leftX + BORDER;
-     float cornerY = leftY + BORDER;
-     //Datum m = null;
-     
-     float fill = 0;
-
-     String lastSponsor = bySponsor.get(0).sponsor;
+     float upperY = leftY + BORDER;
+     float lowerY = h - BORDER - squaresHeight; 
 
      drawBox();
 
      for(int i = 0; i < bySponsor.size(); i++) {
-         Datum d = bySponsor.get(i);
-         if (! d.sponsor.equals(lastSponsor)) {
-             fill++;
-             lastSponsor = d.sponsor;
-         }
-       
-         if (highlightedIndex() >= 0) {
-             int sIndex = highlightedIndex();
-             mark = new Datum();
-             mark.sponsor = bySponsor.get(sIndex).sponsor;
+         Datum s = bySponsor.get(i);
+         Datum d = byDept.get(i);
              
-             if (mark.sharesPartOf(d)) {
+             if (mark.sharesPartOf(s)) {
                  stroke(255, 0, 0);
                  fill(255, 0, 0);
               } else {
-               stroke(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
-               fill(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
+                 stroke(sponsColors[i]);
+                 fill(sponsColors[i]);
               }
-         
-       //} else if (mark != null) {
-       //    if (mark.sponsor.equals(d.sponsor)) { //(mark.isEqualTo(d)) {
-       //      stroke(0, 255, 0);
-       //      fill(0, 255, 0);
-       //    }
-       //} else {
-       //  stroke(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
-       //  fill(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
+              
+              rWidth = sponsTuples.get(i).b - sponsTuples.get(i).a;
+              rect(sponsTuples.get(i).a, upperY, rWidth, squaresHeight);
+              
+              if(mark.sharesPartOf(d)) {
+                 stroke(255, 0, 0);
+                 fill(255, 0, 0);
+              } else {
+                 stroke(deptColors[i]);
+                 fill(deptColors[i]);  
+              }
+              rWidth = deptTuples.get(i).b - deptTuples.get(i).a;
+              rect(deptTuples.get(i).a, lowerY, rWidth, squaresHeight); 
        }
        
-       rect(sponsTuples.get(i).a, cornerY, rWidth, squaresHeight);
-       
-     }
-     
-     cornerX = leftX + BORDER;
-     cornerY = h - BORDER - squaresHeight;
-     
-     String lastDept = byDept.get(0).department;
-     
-     for(int i = 0; i < byDept.size(); i++) {
-       Datum d = byDept.get(i);
-       /* begin coloring */
-       if (! d.department.equals(lastDept)) {
-         fill++;
-         lastDept = d.department;
-       }
-       
-       stroke(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
-       fill(((fill + 1) * 50) % 255, ((fill + 2) * 40) % 255, ((fill + 3) * 30) % 255);
-       /* end coloring code */
-   
-       rect(deptTuples.get(i).a, cornerY, rWidth, squaresHeight); 
-     }
      drawCurves();
   }
 
@@ -136,7 +140,7 @@ class FlowView extends PortView {
              float diff = sponsTuples.get(i).b - sponsTuples.get(i).a;
              
              noStroke();
-             fill(0, 0, 0, 150);
+             fill(sponsColors[i], 150);
              //fill(((i + 1) * 50) % 255, ((i + 2) * 40) % 255, ((i + 3) * 30) % 255);
              
              c1 = lerp(sponsTuples.get(i).b, deptTuples.get(j).b, (1/3));
@@ -157,29 +161,45 @@ class FlowView extends PortView {
   
   
   public Datum hover() {
-      Datum m = null;
+      Datum m = new Datum();
     
-      int sIndex = highlightedIndex();    
+      int sIndex = highlightingSponsors();
+      int dIndex = highlightingDept();
     
       if (sIndex >= 0) {
           Datum hovering = bySponsor.get(sIndex);
-      //for (Datum d : data) {
-      //  if (d.sponsor.equals(highlighted.sponsor)) {
-      //    highlighting.add(d);
-      //  }
-      //}
           m = new Datum(null, null, hovering.sponsor, -1, -1);
-    }
+      }
+      
+      else if (dIndex >= 0) {
+          Datum hovering = byDept.get(dIndex);
+          m = new Datum(null, hovering.department, null, -1, -1);
+      }
+      
     return m;
   }
   
-  int highlightedIndex() {
+  int highlightingSponsors() {
      int index = -1;
      for (int i = 0; i < sponsTuples.size(); i++) {
          if (mouseX > sponsTuples.get(i).a &&
              mouseX < sponsTuples.get(i).b &&
              mouseY > BORDER &&
              mouseY < BORDER + squaresHeight) {
+               index = i;
+               break;
+         }
+     }
+     return index;
+  }
+  
+  int highlightingDept() {
+     int index = -1;
+     for (int i = 0; i < deptTuples.size(); i++) {
+         if (mouseX > deptTuples.get(i).a &&
+             mouseX < deptTuples.get(i).b &&
+             mouseY < h - BORDER &&
+             mouseY > h - BORDER - squaresHeight) {
                index = i;
                break;
          }

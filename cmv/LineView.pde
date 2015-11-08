@@ -116,7 +116,12 @@ class LineView extends PortView {
     }
     
     void drawGraph(){
-        for(int i = 0; i < xCoords.size(); i++) {
+        IntList highlightedYears = new IntList();
+      
+        for(Datum d : data) {
+            if(mark.sharesPartOf(d)) highlightedYears.append(d.year);
+        }
+        for(int i = 0; i < xCoords.size(); i++) { 
             fill(0);
             stroke(0);
             strokeWeight(1);
@@ -126,6 +131,7 @@ class LineView extends PortView {
             line(x, yCoords.get(i), xCoords.get(i+1), yCoords.get(i+1));
           
             if (isHovering(i)) fill(255, 0, 0);
+            if (highlightedYears.hasValue(int(years.get(i)))) fill(255, 0, 0);
             ellipse(x, yCoords.get(i), diameter, diameter);
 
             /* draw the dash on the axis */
@@ -134,9 +140,6 @@ class LineView extends PortView {
             textAlign(CENTER);
             textSize(10);
             text(int(years.get(i)), x, y_origin + 20);
-            
-            
-            
         }  
     }
   

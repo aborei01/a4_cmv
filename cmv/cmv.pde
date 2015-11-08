@@ -1,7 +1,7 @@
 String path = "soe-funding.csv";
 ArrayList<Datum> data;
 Controller ctrl = null;
-Datum mark = null;
+//Datum mark = null;
 float BORDER = 4;
 
 /* TODO: Insert MVC classes here */
@@ -16,15 +16,16 @@ void setup() {
   surface.setResizable(true);
   parse();
   
-  mark = new Datum();
+  Datum mark = new Datum();
   ctrl = new Controller();
-  ctrl.initViews(data);
+  ctrl.initViews(data, mark);
 }
 
 void draw(){
   background(255);
+  ctrl.hover();
   ctrl.drawViews(); 
-  //ctrl.hover();
+
 }
 
 void mouseClicked(){

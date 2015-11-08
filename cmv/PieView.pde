@@ -11,10 +11,10 @@ class PieView extends PortView {
  PieView() {}
  
  public void init() {
-   setPieSize();
-   setPieOrigin();
-   collapseLocal();
-   sortData();
+    setPieSize();
+    setPieOrigin();
+    collapseLocal();
+    sortData();
  }
  
  public void collapseLocal() {
@@ -48,27 +48,12 @@ class PieView extends PortView {
    
    int hoveringIndex = isHovering(arr);
    
-   Datum highlighted = null;
+   Datum highlighted = new Datum();
    
    if (hoveringIndex >= 0) {
      Datum hoveringSection = arr.get(hoveringIndex);
      highlighted = new Datum(hoveringSection.discipline,
                                  null, null, -1, -1);
-     
-     //ArrayList<Datum> hovering = new ArrayList();
-     
-     //Datum hoveringSection = arr.get(hoveringIndex);
-     //String hoveringName = hoveringSection.discipline;
-
-     //for (Datum d : arr) {
-     //  if (d.discipline.equals(hoveringName)) {
-     //    hovering.add(d);
-     //  }
-     //}
-     
-     //for (Datum d : hovering) {
-     //  println("highlighting", d.discipline);
-     //}
    }
 
    return highlighted;
@@ -76,12 +61,6 @@ class PieView extends PortView {
  }
 
  private int isHovering(ArrayList<Datum> a) {
-   
-   //float x_dist = (float) mouseX - x_origin;
-   //float y_dist = (float) mouseY - y_origin;
-   //x_dist = ((x_dist < 0) ? (-1 * x_dist) : x_dist);
-   //y_dist = ((y_dist < 0) ? (-1 * y_dist) : y_dist);
-   //float distance = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
    
    float distance = dist(mouseX, mouseY, x_origin, y_origin);
    boolean inRadius = (distance < radius/2);
@@ -153,10 +132,9 @@ class PieView extends PortView {
          
        }
        
-       if (currDatum.discipline.equals(highlightedName)) {
+       if (currDatum.discipline.equals(highlightedName) || mark.sharesPartOf(currDatum)) {
          fill(255, 0, 0);
        } else {
-         //stroke(((pos + 1) * 50) % 255, ((pos + 2) * 40) % 255, ((pos + 3) * 30) % 255);
          fill(((pos + 1) * 50) % 255, ((pos + 2) * 40) % 255, ((pos + 3) * 30) % 255);
        }
 

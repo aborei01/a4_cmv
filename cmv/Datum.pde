@@ -34,7 +34,7 @@ class Datum {
         
   /* compares a complete datum (d2) to a not full datum (this) */    
   boolean isEqualTo(Datum d){
-      return (mark != null) &&
+      return (this != null) &&
              (this.discipline == null || this.discipline.equals(d.discipline)) &&
              (this.department == null || this.department.equals(d.department)) &&
              (this.sponsor    == null || this.sponsor.   equals(d.sponsor)   ) &&
